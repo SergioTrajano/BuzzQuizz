@@ -18,6 +18,46 @@
 
 
 
+    <div class="criacao-de-quizz">
+        <div class="informacoes-basicas">
+            <p>Comece pelo começo</p>
+            <div class="dados-basicos">
+                <input type="text" placeholder="Título do seu quizz">
+                <input type="text" placeholder="URL da imagem do seu quizz">
+                <input type="text" placeholder="Quantidade de perguntas do quizz">
+                <input type="text" placeholder="Quantidade de níveis do quizz">
+            </div>
+            <div class="prosseguir" onclick="prosseguir('nivel')">
+                Prosseguir pra criar perguntas
+            </div>
+        </div>
+        <div class="perguntas escondido">
+            <p>Crie suas perguntas</p>
+            <div class="dados-perguntas">
+            </div>
+            <div class="prosseguir" onclick="prosseguir('a')">
+                Prosseguir pra criar níveis
+            </div>
+        </div>
+        <div class="niveis escondido">
+            <p>Agora, decida os níveis</p>
+            <div class="dados-niveis">
+            </div>
+            <div class="prosseguir" onclick="prosseguir('a')">
+                Finalizar Quizz
+            </div>
+        </div>
+        <div class="finalizado escondido">
+            <p>Seu quizz está pronto!</p>
+            <img src="" alt="">
+            <div class="prosseguir">
+                Acessar Quizz
+            </div>
+            <div>
+                Voltar pra home
+            </div>
+        </div>
+    </div>
 
     <script src="scripts.js"></script>
 </body>
