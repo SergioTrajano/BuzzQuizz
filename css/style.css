@@ -121,6 +121,29 @@ input {
     align-items: center;
 }
 
+.niveis li {
+    min-height: 74px;
+    width: 600px;
+    padding: 27px 18px 27px 18px;
+    margin-bottom: 22px;
+    position: relative;
+    background-color: #ffffff;
+    box-shadow: 3px 5px 8px #0000000D;
+}
+
+.niveis li p {
+    margin-top: 27px;
+    margin-bottom: 14px;
+    font-size: 20px;
+    line-height: 23px;
+}
+
+.niveis li p:first-child {
+    margin-top: 0;
+    position: absolute;
+    top: 27px;
+}
+
 .finalizado {
     display: flex;
     flex-direction: column;
@@ -132,6 +155,18 @@ input {
     line-height: 25px;
     color: #818181;
     margin-top: 15px;
+}
+
+.finalizado div {
+    position: relative;
+}
+
+.finalizado div p {
+    color: #FFFFFF;
+    margin: 0;
+    position: absolute;
+    bottom: 23px;
+    left: 23px;
 }
 
 .escondido {

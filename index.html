@@ -19,7 +19,7 @@
 
 
     <div class="criacao-de-quizz">
-        <div class="informacoes-basicas">
+        <div class="informacoes-basicas ">
             <p>Comece pelo começo</p>
             <div class="dados-basicos">
                 <input type="text" placeholder="Título do seu quizz">
@@ -41,15 +41,18 @@
         </div>
         <div class="niveis escondido">
             <p>Agora, decida os níveis</p>
-            <div class="dados-niveis">
-            </div>
-            <div class="prosseguir" onclick="prosseguir('a')">
+            <ul>
+            </ul>
+            <div class="prosseguir" onclick="prosseguir('finalizar')">
                 Finalizar Quizz
             </div>
         </div>
         <div class="finalizado escondido">
             <p>Seu quizz está pronto!</p>
-            <img src="" alt="">
+            <div>
+                <img src="" alt="" style="width: 500px; height: 265px">
+                <p></p>
+            </div>
             <div class="prosseguir">
                 Acessar Quizz
             </div>
@@ -59,6 +62,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="scripts.js"></script>
 </body>
 </html>
