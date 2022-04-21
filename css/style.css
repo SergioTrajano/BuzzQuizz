@@ -32,6 +32,7 @@ input {
     position:fixed;
     top: 0;
     left: 0;
+    z-index: 1;
 }
 
 .criacao-de-quizz {
@@ -58,6 +59,7 @@ input {
     flex-direction: column;
     align-items: center;
     background-color: #ffffff;
+    box-shadow: 3px 5px 8px #0000000D;
 }
 
 .prosseguir {
@@ -78,6 +80,39 @@ input {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.perguntas li {
+    min-height: 74px;
+    width: 600px;
+    padding: 27px 18px 27px 18px;
+    margin-bottom: 22px;
+    position: relative;
+    background-color: #ffffff;
+    box-shadow: 3px 5px 8px #0000000D;
+}
+
+.perguntas li p {
+    margin-top: 27px;
+    margin-bottom: 14px;
+    font-size: 20px;
+    line-height: 23px;
+}
+
+.perguntas li p:first-child {
+    margin-top: 0;
+    position: absolute;
+    top: 27px;
+}
+
+.maximizado {
+    margin-top: 39px;
+}
+
+.icone {
+    position: absolute;
+    top: 27px;
+    right: 18px;
 }
 
 .niveis {
