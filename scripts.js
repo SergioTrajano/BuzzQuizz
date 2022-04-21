@@ -1,4 +1,5 @@
 getQuizzes();
+checkUserQuizz();
 
 function tratarErro() {
     alert("Houve algum erro no processo de salvamento!");
@@ -342,7 +343,16 @@ function loadQuizzes(quizzes) {
     for (let i = 0; i < quizzInfo.length; i++) {
         quizzList.innerHTML += `<div class="quizz-retangulo" style="background-image: url('${quizzInfo[i].image}');"><div class="quizz-titulo">${quizzInfo[i].title}</div></div>`;
     }
-    console.log(quizzList.innerHTML);
-
     console.log("Atualizado");
+}
+
+function checkUserQuizz(){
+    const userQuizzes = document.querySelector(".caixa-usuario").innerHTML;
+
+    if (userQuizzes == "") {
+        document.querySelector(".lista-de-quizz").classList.add("escondido");
+        
+    } else {
+        document.querySelector(".criar-quizz").classList.add("escondido");
+    }
 }
