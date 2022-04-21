@@ -340,8 +340,9 @@ function loadQuizzes(quizzes) {
     quizzList.innerHTML = "";
 
     for (let i = 0; i < quizzInfo.length; i++) {
-        quizzList.innerHTML += `<div class="quizz-retangulo" style="background-image: url('${quizzInfo[i].image}');><div class="quizz-titulo">${quizzInfo[i].title}</div></div>`;
+        quizzList.innerHTML += `<div class="quizz-retangulo" style="background-image: url('${quizzInfo[i].image}');"><div class="quizz-titulo">${quizzInfo[i].title}</div></div>`;
     }
+    console.log(quizzList.innerHTML);
 
     console.log("Atualizado");
 }
