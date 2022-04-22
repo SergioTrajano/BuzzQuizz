@@ -4,10 +4,6 @@ function scrollarProx(elemento) {
     elemento.scrollIntoView(false);
 }
 
-function reload() {
-    location.reload;
-}
-
 function ativarFinal(listaQuestoes) {
     const quantRespondido = document.querySelectorAll(".respondido");
     const acerto = document.querySelectorAll(".acerto");
@@ -16,9 +12,14 @@ function ativarFinal(listaQuestoes) {
     const niveis = document.querySelectorAll(".fim-Quizz");
     if (quantRespondido.length === listaQuestoes.length) {
         resultado.classList.remove("escondido");
-        percent = 100 * acerto.length / listaQuestoes.length;
+        if (acerto.length === undefined) {
+            percent = 0;
+        } else {
+            percent = 100 * acerto.length / listaQuestoes.length;
+        }
         for (let i = niveis.length-1; i >= 0; i--) {
             if (Math.ceil(percent) >= Number(niveis[i].querySelector("spam").innerHTML)) {
+                niveis[i].querySelector("spam").innerHTML = percent.toFixed(0);
                 niveis[i].classList.remove("escondido");
                 setTimeout(scrollarProx, TEMPO_2s, resultado);
                 break;
@@ -87,7 +88,7 @@ function renderizarFimQuizz(niveis, id) {
         `
     }
     document.querySelector(".exibir-quizz").innerHTML +=  `
-        <div class="prosseguir" onclick="jogarQuizz(${id})">
+        <div class="prosseguir" onclick="jogarQuizz(${id}, 'exibir-quizz')">
             Reiniciar Quizz
         </div>
         <div>
@@ -100,7 +101,15 @@ function comparador() {
 	return Math.random() - 0.5; 
 }
 
+// function shuffle(array) {
+//     for (let i = array.length - 1; i > 0; i--) {
+//       let j = Math.floor(Math.random() * (i + 1));
+//       [array[i], array[j]] = [array[j], array[i]];
+//     }
+// }
+
 function renderizarQuizz(response) {
+    document.querySelector(".exibir-quizz").classList.remove("escondido");
     let respostas;
     const exibir = document.querySelector(".exibir-quizz");
     exibir.innerHTML = `
@@ -140,7 +149,23 @@ function renderizarQuizz(response) {
     renderizarFimQuizz(response.data.levels, response.data.id);
 }
 
-function jogarQuizz(id) {
+function resetaElemento(tela) {
+    document.querySelector(`.${tela}`).classList.add("escondido");
+    if (tela === "conteudo") {
+        //Colocar o processo de inicialização da div: conteudo
+    }
+    if (tela === "criacao-de-quizz") {
+        document.querySelector(".finalizado").classList.add("escondido");
+        document.querySelector(".informacoes-basicas").classList.remove("escondido");
+        const apagarInput = document.querySelectorAll(".informacoes-basicas input");
+        for (let i = 0; i < apagarInput.length; i++) {
+            apagarInput[i].value = "";
+        }
+    }
+}
+
+function jogarQuizz(id, tela) {
+    resetaElemento(tela);
     const promisse = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${id}`);
     promisse.then(renderizarQuizz);
     promisse.catch(tratarErro);
@@ -160,10 +185,23 @@ function concluirCriacao(response) {
     userId = JSON.stringify(userId);
     localStorage.removeItem("ids");
     localStorage.setItem("ids", userId);
-    const img = document.querySelector(".finalizado img");
-    img.src = document.querySelector(".informacoes-basicas input:nth-child(2)").value;
-    const titulo = document.querySelector(".finalizado div p");
-    titulo.innerHTML = document.querySelector(".informacoes-basicas input:first-child").value;
+    document.querySelector(".finalizado").innerHTML = `
+        <p>Seu quizz está pronto!</p>
+        <div onclick="jogarQuizz(${response.data.id}, 'criacao-de-quizz')">
+            <img src="${response.data.image}" alt="" style="width: 500px; height: 265px">
+            <p>${response.data.title}</p>
+            <div class="gradiente"></div>
+        </div>
+        <div class="prosseguir" onclick="jogarQuizz(${response.data.id}, 'criacao-de-quizz')">
+            Acessar Quizz
+        </div>
+        <div>
+            Voltar pra home
+        </div>
+    `;
+    // <img src="${response.data.image}" alt="" style="width: 500px; height: 265px">
+        // <p>${response.data.title}</p>
+        // <div class="gradiente"></div>
     document.querySelector(".niveis").classList.add("escondido");
     document.querySelector(".finalizado").classList.remove("escondido");
 }
@@ -384,7 +422,7 @@ function maximizarPergunta(elemento, fase) {
     maximizar.classList.remove("escondido");
     elemento.parentNode.classList.add("selecionado");
     elemento.classList.add("escondido");
-    // Ver depois se tem como fazer o scrollIntoView(true) do elemento selecionado
+    elemento.parentNode.scrollIntoView();
 }
 
 function preencherPerguntas() {

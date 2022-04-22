@@ -130,6 +130,7 @@ input {
 
 .question > div:first-child {
     display: flex;
+    word-wrap: break-word;
     justify-content: center;
     align-items: center;
     width: 688px;
@@ -175,9 +176,9 @@ input {
     margin: 140px auto 0 auto;
     width: 1050px;
     height: 1000px;
-  }
-  
-  .criar-quizz {
+}
+
+.criar-quizz {
     width: 1051px;
     height: 181px;
     padding: 30px;
@@ -189,9 +190,9 @@ input {
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-  }
-  
-  .criar-quizz-texto {
+}
+
+.criar-quizz-texto {
     width: 250px;
     font-weight: 400;
     font-size: 20px;
@@ -200,9 +201,9 @@ input {
     align-items: center;
     text-align: center;
     color: #b9b9b9;
-  }
-  
-  .criar-quizz-botao {
+}
+
+.criar-quizz-botao {
     width: 151px;
     height: 40px;
     background: #fafafa;
@@ -215,18 +216,18 @@ input {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-  
-  .lista-de-quizz {
+}
+
+.lista-de-quizz {
     background-color: #fafafa;
     margin-bottom: 50px;
-  }
-  
-  .lista-de-quizz:last-child {
+}
+
+.lista-de-quizz:last-child {
     padding-bottom: 100px;
-  }
-  
-  .titulo-da-lista {
+}
+
+.titulo-da-lista {
     height: 23px;
     margin-bottom: 15px;
     font-weight: 700;
@@ -236,24 +237,24 @@ input {
     align-items: center;
     text-align: center;
     color: #000000;
-  }
-  
-  .titulo-da-lista ion-icon {
+}
+
+.titulo-da-lista ion-icon {
     color: #ec362d;
     margin-left: 10px;
     font-size: 32px;
-  }
-  
-  .caixa-quizzes {
+}
+
+.caixa-quizzes {
     background-color: #fafafa;
     margin-top: 12px;
     display: grid;
     grid-template-columns: auto auto auto;
     row-gap: 12px;
     justify-content: space-between;
-  }
-  
-  .quizz-retangulo {
+}
+
+.quizz-retangulo {
     width: 340px;
     height: 181px;
     background: linear-gradient(
@@ -261,15 +262,15 @@ input {
         rgba(255, 255, 255, 0) 0%,
         rgba(0, 0, 0, 0.5) 70%,
         #000000 100%
-      );
+        );
     background-size: cover;
     border-radius: 5px;
     display: flex;
     align-items: flex-end;
     justify-content: center;
-  }
-  
-  .quizz-titulo {
+}
+
+.quizz-titulo {
     width: 301px;
     height: 54px;
     margin-bottom: 5px;
@@ -279,7 +280,7 @@ input {
     display: flex;
     align-items: center;
     color: #ffffff;
-  }
+}
 
 .criacao-de-quizz {
     margin: 69px auto 0 auto;
@@ -309,7 +310,7 @@ input {
 
 .prosseguir {
     width: 324px;
-    height: 54px;
+    min-height: 54px;
     background-color: #EC362D;
     color: #FFF5F4;
     border-radius: 15px;
@@ -319,18 +320,86 @@ input {
     justify-content: center;
     align-items: center;
     margin-top: 60px;
+    margin-bottom: 30px;
 }
 
 .perguntas {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: absolute;
+    top: 69px;
+    left: 0;
+    bottom: 0;
+    overflow-y: scroll;
+    margin-bottom: 30px;
+}
+
+.perguntas li {
+    min-height: 74px;
+    width: 600px;
+    padding: 27px 18px 27px 18px;
+    margin-bottom: 22px;
+    position: relative;
+    background-color: #ffffff;
+    box-shadow: 3px 5px 8px #0000000D;
+}
+
+.perguntas li p {
+    margin-top: 27px;
+    margin-bottom: 14px;
+    font-size: 20px;
+    line-height: 23px;
+}
+
+.perguntas li p:first-child {
+    margin-top: 0;
+    position: absolute;
+    top: 27px;
+}
+
+.maximizado {
+    margin-top: 39px;
+}
+
+.icone {
+    position: absolute;
+    top: 27px;
+    right: 18px;
 }
 
 .niveis {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: absolute;
+    top: 69px;
+    left: 0;
+}
+
+.niveis li {
+    min-height: 74px;
+    width: 600px;
+    padding: 27px 18px 27px 18px;
+    margin-bottom: 22px;
+    position: relative;
+    background-color: #ffffff;
+    box-shadow: 3px 5px 8px #0000000D;
+}
+
+.niveis li p {
+    margin-top: 27px;
+    margin-bottom: 14px;
+    font-size: 20px;
+    line-height: 23px;
+}
+
+.niveis li p:first-child {
+    margin-top: 0;
+    position: absolute;
+    top: 27px;
 }
 
 .finalizado {
