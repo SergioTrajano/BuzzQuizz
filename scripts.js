@@ -1,3 +1,151 @@
+const TEMPO_2s = 2 * 1000;
+
+function scrollarProx(elemento) {
+    elemento.scrollIntoView(false);
+}
+
+function reload() {
+    location.reload;
+}
+
+function ativarFinal(listaQuestoes) {
+    const quantRespondido = document.querySelectorAll(".respondido");
+    const acerto = document.querySelectorAll(".acerto");
+    let percent;
+    const resultado = document.querySelector(".resultado");
+    const niveis = document.querySelectorAll(".fim-Quizz");
+    if (quantRespondido.length === listaQuestoes.length) {
+        resultado.classList.remove("escondido");
+        percent = 100 * acerto.length / listaQuestoes.length;
+        for (let i = niveis.length-1; i >= 0; i--) {
+            if (Math.ceil(percent) >= Number(niveis[i].querySelector("spam").innerHTML)) {
+                niveis[i].classList.remove("escondido");
+                setTimeout(scrollarProx, TEMPO_2s, resultado);
+                break;
+            }
+        }
+    }
+}
+
+function verificarResposta(opcao) {
+    const question = opcao.parentNode.parentNode.querySelectorAll(".opcao");
+    const questaoSelecionada = opcao.parentNode.parentNode.parentNode;
+    questaoSelecionada.classList.add("respondido");
+    if (opcao.parentNode.classList.contains("true")) {
+        questaoSelecionada.classList.add("acerto");
+    }
+    const listaQuestoes = document.querySelectorAll(".question");
+    for (let i = 0; i < question.length; i++) {
+        if (opcao.parentNode.innerHTML !== question[i].innerHTML) {
+            question[i].querySelector("div").classList.remove("escondido");
+        }
+        if (question[i].classList.contains("true")) {
+            question[i].querySelector("p").style.color = "#009C22";
+        }
+        if (question[i].classList.contains("false")) {
+            question[i].querySelector("p").style.color = "#FF4B4B";
+        }
+    }
+    for (let j = 0; j < listaQuestoes.length; j++) {
+        if (!listaQuestoes[j].classList.contains("respondido")) {
+            setTimeout(scrollarProx, TEMPO_2s, listaQuestoes[j]);
+            break;
+        }
+    }
+    ativarFinal(listaQuestoes);
+}
+
+function renderizarFimQuizz(niveis, id) {
+    let porcentagens = [];
+    for (let i = 0; i < niveis.length; i++) {
+        porcentagens[porcentagens.length] = niveis[i].minValue;
+    }
+    porcentagens = porcentagens.sort();
+    const niveisOrdenados = [];
+    for (let j = 0; j < niveis.length; j++) {
+        if (niveis[j].minValue === porcentagens[niveisOrdenados.length]) {
+            niveisOrdenados[niveisOrdenados.length] = niveis[j];
+            continue;
+        }
+    }
+    const pergunta = document.querySelector(".exibir-quizz > div:last-child");
+    pergunta.innerHTML += `
+        <div class="resultado escondido"></div>
+    `;
+    const telaFinal = pergunta.querySelector(".resultado");
+    for(let k = 0; k < niveis.length; k++) {
+        telaFinal.innerHTML += `
+            <div class="escondido fim-Quizz">
+                <div>
+                    <spam>${niveisOrdenados[k].minValue}</spam>% de acerto:&nbsp<span>${niveisOrdenados[k].title}</span>
+                </div>
+                <div>
+                    <img src="${niveisOrdenados[k].image}" alt="" style="width: 364px; height: 273px; object-fit: cover">
+                    <p>${niveisOrdenados[k].text}</p>
+                </div>
+            </div>
+        `
+    }
+    document.querySelector(".exibir-quizz").innerHTML +=  `
+        <div class="prosseguir" onclick="jogarQuizz(${id})">
+            Reiniciar Quizz
+        </div>
+        <div>
+            Voltar pra home
+        </div>
+    `;
+}
+
+function comparador() { 
+	return Math.random() - 0.5; 
+}
+
+function renderizarQuizz(response) {
+    let respostas;
+    const exibir = document.querySelector(".exibir-quizz");
+    exibir.innerHTML = `
+        <div class="banner">
+            <img src="${response.data.image}" alt="" style="width: 100%; height: 227px; object-fit: cover;">
+            <div class="fundo">
+                <p>${response.data.title}</p>
+            </div>
+        </div>
+        <div></div>
+    `;
+    const pergunta = document.querySelector(".exibir-quizz > div:last-child");
+    for (let i = 0; i < response.data.questions.length; i++) {
+        respostas = response.data.questions[i].answers;
+        respostas = respostas.sort(comparador);
+        pergunta.innerHTML += `
+            <div class="question">
+                <div>
+                    ${response.data.questions[i].title}
+                </div>
+                <div>
+                </div>
+            </div>
+        `;
+        pergunta.querySelector(`.question:nth-child(${i+1}) div:first-child`).style.background = response.data.questions[i].color;
+        for (let j = 0; j < respostas.length; j++) {
+            pergunta.querySelector(`.question:nth-child(${i+1}) div:last-child`).innerHTML += `
+                <div class="opcao ${respostas[j].isCorrectAnswer}">
+                    <img onclick="verificarResposta(this)" src="${respostas[j].image}" alt="" style="width: 330px; height: 175px; object-fit: cover;">
+                    <p onclick="verificarResposta(this)">${respostas[j].text}</p>
+                    <div class="escondido"></div>
+                </div>
+            `
+        }  
+    }
+    exibir.scrollIntoView();
+    renderizarFimQuizz(response.data.levels, response.data.id);
+}
+
+function jogarQuizz(id) {
+    const promisse = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${id}`);
+    promisse.then(renderizarQuizz);
+    promisse.catch(tratarErro);
+}
+
 
 function tratarErro() {
     alert("Houve algum erro no processo de salvamento!");
@@ -12,6 +160,8 @@ function concluirCriacao(response) {
     localStorage.setItem("ids", userId);
     const img = document.querySelector(".finalizado img");
     img.src = document.querySelector(".informacoes-basicas input:nth-child(2)").value;
+    const titulo = document.querySelector(".finalizado div p");
+    titulo.innerHTML = document.querySelector(".informacoes-basicas input:first-child").value;
     document.querySelector(".niveis").classList.add("escondido");
     document.querySelector(".finalizado").classList.remove("escondido");
 }
