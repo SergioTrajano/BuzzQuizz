@@ -146,6 +146,8 @@ function jogarQuizz(id) {
     promisse.catch(tratarErro);
 }
 
+getQuizzes();
+checkUserQuizz();
 
 function tratarErro() {
     alert("Houve algum erro no processo de salvamento!");
@@ -474,4 +476,35 @@ function prosseguir(fase) {
     if (fase === "finalizar") {
         salvarQuizz();
     }
+}
+
+function getQuizzes() {
+    const promise = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes");
+    promise.then(loadQuizzes)
+}
+
+function loadQuizzes(quizzes) {
+    quizzInfo = quizzes.data;
+    const quizzList = document.querySelector(".caixa-quizzes");
+    quizzList.innerHTML = "";
+
+    for (let i = 0; i < quizzInfo.length; i++) {
+        quizzList.innerHTML += `<div class="quizz-retangulo" style="background-image: url('${quizzInfo[i].image}');"><div class="quizz-titulo">${quizzInfo[i].title}</div></div>`;
+    }
+}
+
+function checkUserQuizz(){
+    const userQuizzes = document.querySelector(".caixa-usuario").innerHTML;
+
+    if (userQuizzes == "") {
+        document.querySelector(".lista-de-quizz").classList.add("escondido");
+        
+    } else {
+        document.querySelector(".criar-quizz").classList.add("escondido");
+    }
+}
+
+function transicaoParaCriacao() {
+    document.querySelector(".conteudo").classList.add("escondido");
+    document.querySelector(".criacao-de-quizz").classList.remove("escondido");
 }
