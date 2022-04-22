@@ -340,7 +340,7 @@ function loadQuizzes(quizzes) {
 
     for (let i = 0; i < quizzInfo.length; i++) {
         quizzList.innerHTML += `<div class="quizz-retangulo" style="background-image: url('${quizzInfo[i].image}');"><div class="quizz-titulo">${quizzInfo[i].title}</div></div>`;
-    }
+    } 
 }
 
 function checkUserQuizz(){
@@ -357,4 +357,11 @@ function checkUserQuizz(){
 function transicaoParaCriacao() {
     document.querySelector(".conteudo").classList.add("escondido");
     document.querySelector(".criacao-de-quizz").classList.remove("escondido");
+}
+
+function idUserQuizz() {
+    let userId = localStorage.getItem("ids");
+    userId = JSON.parse(userId);
+    console.log("Testando");
+    console.log(userId);
 }
