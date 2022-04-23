@@ -6,15 +6,25 @@ const TAM_MAX_TITULO_QUIZZ = 65;
 const TAM_MIN_TITULO_NIVEL = 10;
 const PORCENTAGEM_MINIMA_NIVEL = 0;
 const PORCENTAGEM_MAXIMA_NIVEL = 100;
-const QUANT_MINIMA_DESCRICA = 30;
+const TAM_MIN_DESCRICAO = 30;
 const TAMANHO_MIN_PERGUNTA = 20;
-const regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-const reg = /^#([0-9a-f]{3}){1,2}$/i;
+const testURL = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+const testCor = /^#([0-9a-f]{3}){1,2}$/i;
+
+function resetarCriacao() {
+    document.querySelector(".finalizado").classList.add("escondido");
+    document.querySelector(".informacoes-basicas").remove("escondido");
+    const inputs = document.querySelectorAll(".informacoes-basicas input");
+    for (let i = 0; i < inputs.length; i++) {
+        inputs[i].value = "";
+    }
+}
 
 function retornarHome(tela) {
     if (tela === "criacao-de-quizz") {
         getQuizzes();
         checkUserQuizz();
+        resetarCriacao();
     }
     document.querySelector(`.${tela}`).classList.add("escondido");
     document.querySelector(".conteudo").classList.remove("escondido");
@@ -284,31 +294,50 @@ function validarNiveis() {
     let url;
     let descricao;
     let porcetZero = false;
+    let resposta = true;
     for (let i = 1; i <= numNiveis; i++) {
-        tituloNivel = document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(1)`).value;
-        porcent = parseInt(document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(2)`).value);
-        url = document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(3)`).value;
-        descricao = document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(4)`).value;
-        if (tituloNivel.length < TAM_MIN_TITULO_NIVEL) {
-            return false;
+        tituloNivel = document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(1)`);
+        porcent = document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(2)`);
+        url = document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(3)`);
+        descricao = document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(4)`);
+        if (tituloNivel.value.length < TAM_MIN_TITULO_NIVEL) {
+            tituloNivel.value = "";
+            tituloNivel.placeholder = `O título do nível deve ter no mínimo ${TAM_MIN_TITULO_NIVEL} caracteres!`;
+            tituloNivel.style.background = "#FFE9E9";
+            resposta = false;
         }
-        if (porcent < PORCENTAGEM_MINIMA_NIVEL || porcent > PORCENTAGEM_MAXIMA_NIVEL) {
-            return false;
+        if (parseInt(porcent.value) < PORCENTAGEM_MINIMA_NIVEL || parseInt(porcent.value) > PORCENTAGEM_MAXIMA_NIVEL || isNaN(parseInt(porcent.value))) {
+            porcent.value = "";
+            porcent.style.background = "#FFE9E9";
+            porcent.placeholder = "A porcentagem deve ser entre 0 e 100!";
+            resposta = false;
         }
-        if (porcent === PORCENTAGEM_MINIMA_NIVEL) {
+        if (parseInt(porcent.value) === PORCENTAGEM_MINIMA_NIVEL) {
             porcetZero = true;
         }
-        if (!regexp.test(url)) {
-            return false;
+        if (!testURL.test(url.value)) {
+            url.value = "";
+            url.style.background = "#FFE9E9";
+            if (url.value !== "") {
+                url.placeholder = "Url inválida!";
+            }
+            if (url.value === "") {
+                url.placeholder = "Informe uma Url válida!";
+            }
+            resposta = false;
         }
-        if (descricao.length < QUANT_MINIMA_DESCRICA) {
-            return false;
+        if (descricao.value.length < TAM_MIN_DESCRICAO) {
+            descricao.value = "";
+            descricao.style.background = "#FFE9E9";
+            descricao.placeholder = `A descrição deve ter no minímo ${TAM_MIN_DESCRICAO} caracteres!`;
+            resposta = false;
         }
     }
     if (!porcetZero) {
-        return false;
+        resposta = false;
+        alert("Deve haver pelo menos um nível com porcentagem igual a 0");
     }
-    return true;
+    return resposta;
 }
 
 function salvarQuizz() {
@@ -322,8 +351,6 @@ function salvarQuizz() {
         const promisse = axios.post("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes", quizz);
         promisse.then(concluirCriacao);
         promisse.catch(tratarErro);
-    } else {
-        alert("Há algum dado inválido!");
     }
 }
 
@@ -369,39 +396,80 @@ function validarPerguntas() {
     let urlResposta;
     let textoErro;
     let urlErro;
-    const numPerguntas = parseInt(document.querySelector(".informacoes-basicas input:nth-child(3)").value);
-    for (let i = 1; i <= numPerguntas; i++) {
-        textoPergunta = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(1)`).value;
-        corFundo = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(2)`).value.toUpperCase();
-        textoResposta = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(4)`).value;
-        urlResposta = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(5)`).value;
-        if (textoPergunta.length < TAMANHO_MIN_PERGUNTA) {
-            return false;
+    let retorno = true;
+    let quantRespostaErrado;
+    const numPerguntas = document.querySelector(".informacoes-basicas input:nth-child(3)");
+    for (let i = 1; i <= parseInt(numPerguntas.value); i++) {
+        textoPergunta = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(1)`);
+        corFundo = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(2)`);
+        textoResposta = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(4)`);
+        urlResposta = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(5)`);
+        if (textoPergunta.value.length < TAMANHO_MIN_PERGUNTA) {
+            textoPergunta.value = "";
+            textoPergunta.style.background = "#FFE9E9";
+            textoPergunta.placeholder = `O titulo deve ter no minimo ${TAMANHO_MIN_PERGUNTA} caracteres!`;
+            retorno = false;
         }
-        if (!reg.test(corFundo)) {
-            return false;
+        if (!testCor.test(corFundo.value.toUpperCase())) {
+            corFundo.value = "";
+            corFundo.style.background = "#FFE9E9";
+            corFundo.placeholder = "A cor deve ser uma cor hexadecimal!";
+            retorno = false;
         }
-        if (textoResposta === "") {
-            return false;
+        if (textoResposta.value === "") {
+            textoResposta.value = "";
+            textoResposta.style.background = "#FFE9E9";
+            textoResposta.placeholder = "O quizz deve ter uma resposta correta...";
+            retorno = false;
         }
-        if (!regexp.test(urlResposta)) {
-            return false;
+        if (!testURL.test(urlResposta.value)) {
+            urlResposta.value = "";
+            urlResposta.style.background = "#FFE9E9";
+            if (testURL.value !== "") {
+                testURL.placeholder = "Url inválida!";
+            }
+            if (testURL.value === "") {
+                testURL.placeholder = "Informe uma Url válida!";
+            }
+            retorno = false;
         }
         for (let j = 7; j < 12; j+=2) {
-            textoErro = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(${j})`).value;
-            urlErro = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(${j+1})`).value;
-            if (textoErro !== "" && !regexp.test(urlErro)) {
-                return false;
+            textoErro = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(${j})`);
+            urlErro = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(${j+1})`);
+            if (textoErro.value !== "" && !testURL.test(urlErro.value)) {
+                testURL.value = "";
+                testURL.style.background = "#FFE9E9";
+                if (testURL.value !== "") {
+                    testURL.placeholder = "Url inválida!";
+                }
+                if (testURL.value === "") {
+                    testURL.placeholder = "Informe uma Url válida!";
+                }
+                retorno = false;
             }
-            if (!regexp.test(urlErro) && urlErro.length > 0) {
-                return false;
+            if (!testURL.test(urlErro.value) && urlErro.value.length > 0) {
+                testURL.value = "";
+                testURL.style.background = "#FFE9E9";
+                if (testURL.value !== "") {
+                    testURL.placeholder = "Url inválida!";
+                }
+                if (testURL.value === "") {
+                    testURL.placeholder = "Informe uma Url válida!";
+                }
+                retorno = false;
             }
         }
         if (document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(7)`).value === "" && document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(9)`).value === "" && document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(11)`).value === "") {
-            return false;
+            document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(7)`).style.background = "#FFE9E9";
+            document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(8)`).style.background = "#FFE9E9";
+            quantRespostaErrado = 0;
+            retorno = false;
         }
     }
-    return true;
+    if (quantRespostaErrado === 0) {
+        alert("Deve haver pelo menos uma resposta errada para cada pergunta!");
+    }
+    return retorno;
 }
 
 function verificarPerguntas() {
@@ -409,8 +477,6 @@ function verificarPerguntas() {
         document.querySelector(".perguntas").classList.add("escondido");
         document.querySelector(".niveis").classList.remove("escondido");
         preencherNiveis();
-    } else {
-        alert("Há alguma informação invalida!");
     }
 }
 
@@ -480,29 +546,48 @@ function preencherPerguntas() {
 }
 
 function informacoesValidas(titulo, url, numPerguntas, numNiveis) {
-    if (titulo.length < TAM_MIN_TITULO_QUIZZ || titulo.length > TAM_MAX_TITULO_QUIZZ) {
-        return false;
+    let resposta = true;
+    if (titulo.value.length < TAM_MIN_TITULO_QUIZZ || titulo.length > TAM_MAX_TITULO_QUIZZ) {
+        titulo.value = "";
+        titulo.style.background = "#FFE9E9";
+        titulo.placeholder = `O título do quizz deve ter entre ${TAM_MIN_TITULO_QUIZZ} e ${TAM_MAX_TITULO_QUIZZ} caracteres!`;
+        resposta = false;
     }
-    if (parseInt(numPerguntas) < QUANT_MINIMA_PERGUNTAS) {
-        return false;
+    if (parseInt(numPerguntas.value) < QUANT_MINIMA_PERGUNTAS || isNaN(parseInt(numPerguntas.value))) {
+        numPerguntas.value = "";
+        numPerguntas.style.background = "#FFE9E9";
+        numPerguntas.placeholder = `Deve haver no minímo ${QUANT_MINIMA_PERGUNTAS} perguntas!`;
+        resposta = false;
     }
-    if (parseInt(numNiveis) < QUANT_MINIMA_NIVEIS) {
-        return false;
+    if (parseInt(numNiveis.value) < QUANT_MINIMA_NIVEIS || isNaN(parseInt(numNiveis.value))) {
+        numNiveis.value = "";
+        numNiveis.style.background = "#FFE9E9";
+        numNiveis.placeholder = `Deve haver no minímo ${QUANT_MINIMA_NIVEIS} níveis!`;
+        resposta = false;
     }
-    return regexp.test(url);
+    if (!testURL.test(url.value)) {
+        url.value = "";
+        url.style.background = "#FFE9E9";
+        if (url.value !== "") {
+            url.placeholder = "Url inválida!";
+        }
+        if (url.value === "") {
+            url.placeholder = "Informe uma Url válida!";
+        }
+        resposta = false;
+    }
+    return resposta;
 }
 
 function verificarInfoBasicas() {
-    const titulo = document.querySelector(".informacoes-basicas input:nth-child(1)").value;
-    const url = document.querySelector(".informacoes-basicas input:nth-child(2)").value;
-    const numPerguntas = document.querySelector(".informacoes-basicas input:nth-child(3)").value;
-    const numNiveis = document.querySelector(".informacoes-basicas input:nth-child(4)").value;
+    const titulo = document.querySelector(".informacoes-basicas input:nth-child(1)");
+    const url = document.querySelector(".informacoes-basicas input:nth-child(2)");
+    const numPerguntas = document.querySelector(".informacoes-basicas input:nth-child(3)");
+    const numNiveis = document.querySelector(".informacoes-basicas input:nth-child(4)");
     if (informacoesValidas(titulo, url, numPerguntas, numNiveis)) {
         document.querySelector(".informacoes-basicas").classList.add("escondido");
         document.querySelector(".perguntas").classList.remove("escondido");
         preencherPerguntas();
-    } else {
-        alert("Alguma informação é invalida!!");
     }
 }
 
