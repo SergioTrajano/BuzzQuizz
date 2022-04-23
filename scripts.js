@@ -1,27 +1,49 @@
 const TEMPO_2s = 2 * 1000;
+const QUANT_MINIMA_PERGUNTAS = 3;
+const QUANT_MINIMA_NIVEIS = 2;
+const TAM_MIN_TITULO_QUIZZ = 20;
+const TAM_MAX_TITULO_QUIZZ = 65;
+const TAM_MIN_TITULO_NIVEL = 10;
+const PORCENTAGEM_MINIMA_NIVEL = 0;
+const PORCENTAGEM_MAXIMA_NIVEL = 100;
+const QUANT_MINIMA_DESCRICA = 30;
+const TAMANHO_MIN_PERGUNTA = 20;
+const regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+const reg = /^#([0-9a-f]{3}){1,2}$/i;
+
+function retornarHome(tela) {
+    if (tela === "criacao-de-quizz") {
+        getQuizzes();
+        checkUserQuizz();
+    }
+    document.querySelector(`.${tela}`).classList.add("escondido");
+    document.querySelector(".conteudo").classList.remove("escondido");
+}
 
 function scrollarProx(elemento) {
-    elemento.scrollIntoView(false);
+    elemento.scrollIntoView();
+}
+
+function mostrarResultado(niveis, resultado) {
+    niveis.classList.remove("escondido");
+    scrollarProx(resultado);
 }
 
 function ativarFinal(listaQuestoes) {
     const quantRespondido = document.querySelectorAll(".respondido");
     const acerto = document.querySelectorAll(".acerto");
-    let percent;
+    let percent = 0;
     const resultado = document.querySelector(".resultado");
     const niveis = document.querySelectorAll(".fim-Quizz");
     if (quantRespondido.length === listaQuestoes.length) {
         resultado.classList.remove("escondido");
-        if (acerto.length === undefined) {
-            percent = 0;
-        } else {
+        if (acerto.length !== undefined) {
             percent = 100 * acerto.length / listaQuestoes.length;
         }
         for (let i = niveis.length-1; i >= 0; i--) {
             if (Math.ceil(percent) >= Number(niveis[i].querySelector("spam").innerHTML)) {
                 niveis[i].querySelector("spam").innerHTML = percent.toFixed(0);
-                niveis[i].classList.remove("escondido");
-                setTimeout(scrollarProx, TEMPO_2s, resultado);
+                setTimeout(mostrarResultado, TEMPO_2s, niveis[i], resultado);
                 break;
             }
         }
@@ -56,18 +78,23 @@ function verificarResposta(opcao) {
     ativarFinal(listaQuestoes);
 }
 
+function ordenarNiveis(niveisOrdenados, porcentagens, niveis) {
+    for (let i = 0; i < porcentagens.length; i++) {
+        if (niveis[i].minValue === porcentagens[niveisOrdenados.length]) {
+            return niveis[i];
+        }
+    }
+}
+
 function renderizarFimQuizz(niveis, id) {
     let porcentagens = [];
     for (let i = 0; i < niveis.length; i++) {
         porcentagens[porcentagens.length] = niveis[i].minValue;
     }
-    porcentagens = porcentagens.sort();
+    porcentagens.sort();
     const niveisOrdenados = [];
     for (let j = 0; j < niveis.length; j++) {
-        if (niveis[j].minValue === porcentagens[niveisOrdenados.length]) {
-            niveisOrdenados[niveisOrdenados.length] = niveis[j];
-            continue;
-        }
+        niveisOrdenados[niveisOrdenados.length] = ordenarNiveis(niveisOrdenados, porcentagens, niveis);
     }
     const pergunta = document.querySelector(".exibir-quizz > div:last-child");
     pergunta.innerHTML += `
@@ -85,28 +112,24 @@ function renderizarFimQuizz(niveis, id) {
                     <p>${niveisOrdenados[k].text}</p>
                 </div>
             </div>
-        `
+        `;
     }
     document.querySelector(".exibir-quizz").innerHTML +=  `
         <div class="prosseguir" onclick="jogarQuizz(${id}, 'exibir-quizz')">
             Reiniciar Quizz
         </div>
-        <div>
+        <div onclick="retornarHome('exibir-quizz')">
             Voltar pra home
         </div>
     `;
 }
 
-function comparador() { 
-	return Math.random() - 0.5; 
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
 }
-
-// function shuffle(array) {
-//     for (let i = array.length - 1; i > 0; i--) {
-//       let j = Math.floor(Math.random() * (i + 1));
-//       [array[i], array[j]] = [array[j], array[i]];
-//     }
-// }
 
 function renderizarQuizz(response) {
     document.querySelector(".exibir-quizz").classList.remove("escondido");
@@ -124,7 +147,7 @@ function renderizarQuizz(response) {
     const pergunta = document.querySelector(".exibir-quizz > div:last-child");
     for (let i = 0; i < response.data.questions.length; i++) {
         respostas = response.data.questions[i].answers;
-        respostas = respostas.sort(comparador);
+        shuffle(respostas);
         pergunta.innerHTML += `
             <div class="question">
                 <div>
@@ -145,15 +168,12 @@ function renderizarQuizz(response) {
             `
         }  
     }
-    exibir.scrollIntoView();
+    scrollarProx(document.querySelector(".exibir-quizz .banner"));
     renderizarFimQuizz(response.data.levels, response.data.id);
 }
 
 function resetaElemento(tela) {
     document.querySelector(`.${tela}`).classList.add("escondido");
-    if (tela === "conteudo") {
-        //Colocar o processo de inicialização da div: conteudo
-    }
     if (tela === "criacao-de-quizz") {
         document.querySelector(".finalizado").classList.add("escondido");
         document.querySelector(".informacoes-basicas").classList.remove("escondido");
@@ -164,6 +184,7 @@ function resetaElemento(tela) {
     }
 }
 
+//O argumento "tela" dessa função significa o nome da "tela" em que estava o item que foi clickado, ou seja, os possíveis valores desse argumentão são: 'exibir-quizz', 'conteudo' ou 'criacao-de-quizz'; (para ver um exemplo da aplicação, olhar a função "renderizarFimQuizz")
 function jogarQuizz(id, tela) {
     resetaElemento(tela);
     const promisse = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${id}`);
@@ -175,7 +196,7 @@ getQuizzes();
 checkUserQuizz();
 
 function tratarErro() {
-    alert("Houve algum erro no processo de salvamento!");
+    alert("Houve algum erro no processo!");
 }
 
 function concluirCriacao(response) {
@@ -195,13 +216,10 @@ function concluirCriacao(response) {
         <div class="prosseguir" onclick="jogarQuizz(${response.data.id}, 'criacao-de-quizz')">
             Acessar Quizz
         </div>
-        <div>
+        <div onclick="retornarHome('criacao-de-quizz')">
             Voltar pra home
         </div>
     `;
-    // <img src="${response.data.image}" alt="" style="width: 500px; height: 265px">
-        // <p>${response.data.title}</p>
-        // <div class="gradiente"></div>
     document.querySelector(".niveis").classList.add("escondido");
     document.querySelector(".finalizado").classList.remove("escondido");
 }
@@ -213,7 +231,7 @@ function acharNivel(i) {
         image: nivel.querySelector("input:nth-child(3)").value,
         text: nivel.querySelector("input:nth-child(4)").value,
         minValue: nivel.querySelector("input:nth-child(2)").value
-    }
+    };
 }
 
 function retornarNiveis() {
@@ -240,18 +258,18 @@ function acharPergunta(i) {
                 text: pergunta.querySelector(`.maximizado input:nth-child(${j})`).value,
                 image: pergunta.querySelector(`.maximizado input:nth-child(${j+1})`).value,
                 isCorrectAnswer: false
-            }
+            };
         }
     }
     return {
         title: titulo,
         color: cor,
         answers: opcoes
-    }
+    };
 }
 
 function retornarPerguntas() {
-    const questions = []
+    const questions = [];
     const numPerguntas = parseInt(document.querySelector(".informacoes-basicas input:nth-child(3)").value);
     for (let i = 1; i <= numPerguntas; i++) {
         questions[i-1] = acharPergunta(i);
@@ -259,17 +277,8 @@ function retornarPerguntas() {
     return questions;
 }
 
-function retornarUrl() {
-    return document.querySelector(".informacoes-basicas input:nth-child(2)").value;
-}
-
-function retornarTitulo() {
-    return document.querySelector(".informacoes-basicas input:first-child").value;
-}
-
 function validarNiveis() {
     const numNiveis = parseInt(document.querySelector(".informacoes-basicas input:last-child").value);
-    const regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
     let tituloNivel;
     let porcent;
     let url;
@@ -280,24 +289,24 @@ function validarNiveis() {
         porcent = parseInt(document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(2)`).value);
         url = document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(3)`).value;
         descricao = document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(4)`).value;
-        if (tituloNivel.length < 10) {
+        if (tituloNivel.length < TAM_MIN_TITULO_NIVEL) {
             return false;
         }
-        if (porcent < 0 || porcent > 100) {
+        if (porcent < PORCENTAGEM_MINIMA_NIVEL || porcent > PORCENTAGEM_MAXIMA_NIVEL) {
             return false;
         }
-        if (porcent === 0) {
+        if (porcent === PORCENTAGEM_MINIMA_NIVEL) {
             porcetZero = true;
         }
         if (!regexp.test(url)) {
             return false;
         }
-        if (descricao.length < 30) {
+        if (descricao.length < QUANT_MINIMA_DESCRICA) {
             return false;
         }
     }
     if (!porcetZero) {
-        return false
+        return false;
     }
     return true;
 }
@@ -305,8 +314,8 @@ function validarNiveis() {
 function salvarQuizz() {
     if (validarNiveis()) {
         const quizz = {
-            title: retornarTitulo(),
-            image: retornarUrl(),
+            title: document.querySelector(".informacoes-basicas input:first-child").value,
+            image: document.querySelector(".informacoes-basicas input:nth-child(2)").value,
             questions: retornarPerguntas(),
             levels: retornarNiveis()
         };
@@ -335,7 +344,7 @@ function preencherNiveis() {
                         <input type="text" placeholder="Descrição do nível">
                     </div>
                 </li>
-            `
+            `;
         } else {
             listaNiveis.innerHTML += `
                 <li>
@@ -348,13 +357,12 @@ function preencherNiveis() {
                         <input type="text" placeholder="Descrição do nível">
                     </div>
                 </li>
-            `
+            `;
         }
     }
 }
 
 function validarPerguntas() {
-    const regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
     let textoPergunta;
     let corFundo;
     let textoResposta;
@@ -367,16 +375,11 @@ function validarPerguntas() {
         corFundo = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(2)`).value.toUpperCase();
         textoResposta = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(4)`).value;
         urlResposta = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(5)`).value;
-        if (textoPergunta.length < 20) {
+        if (textoPergunta.length < TAMANHO_MIN_PERGUNTA) {
             return false;
         }
-        if (corFundo.length !== 7 || corFundo[0] !== "#") {
+        if (!reg.test(corFundo)) {
             return false;
-        }
-        for (let k = 1; k < 7; k++) {
-            if (corFundo[k] !== 'A' && corFundo[k] !== 'B' && corFundo[k] !== 'C' && corFundo[k] !== 'D' && corFundo[k] !== 'E' && corFundo[k] !== 'F' && isNaN(Number(corFundo[k]))) {
-                return false;
-            }
         }
         if (textoResposta === "") {
             return false;
@@ -422,7 +425,7 @@ function maximizarPergunta(elemento, fase) {
     maximizar.classList.remove("escondido");
     elemento.parentNode.classList.add("selecionado");
     elemento.classList.add("escondido");
-    elemento.parentNode.scrollIntoView();
+    scrollarProx(elemento.parentNode);
 }
 
 function preencherPerguntas() {
@@ -450,7 +453,7 @@ function preencherPerguntas() {
                     <input type="text" placeholder="URL da imagem 3">
                 </div>
             </li>
-            `
+            `;
         } else {
             formularioPerguntas.innerHTML += `
                 <li>
@@ -471,20 +474,19 @@ function preencherPerguntas() {
                         <input type="text" placeholder="URL da imagem 3">
                     </div>
                 </li>
-            `
+            `;
         }
     }
 }
 
 function informacoesValidas(titulo, url, numPerguntas, numNiveis) {
-    const regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-    if (titulo.length < 20 || titulo.length > 65) {
+    if (titulo.length < TAM_MIN_TITULO_QUIZZ || titulo.length > TAM_MAX_TITULO_QUIZZ) {
         return false;
     }
-    if (parseInt(numPerguntas) < 3) {
+    if (parseInt(numPerguntas) < QUANT_MINIMA_PERGUNTAS) {
         return false;
     }
-    if (parseInt(numNiveis) < 2) {
+    if (parseInt(numNiveis) < QUANT_MINIMA_NIVEIS) {
         return false;
     }
     return regexp.test(url);
@@ -500,7 +502,7 @@ function verificarInfoBasicas() {
         document.querySelector(".perguntas").classList.remove("escondido");
         preencherPerguntas();
     } else {
-        alert("Alguma informação é invalida!!")
+        alert("Alguma informação é invalida!!");
     }
 }
 
