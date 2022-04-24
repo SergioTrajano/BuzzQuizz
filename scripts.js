@@ -226,6 +226,9 @@ function concluirCriacao(response) {
     getQuizzes();
     let userId = localStorage.getItem("ids");
     userId = JSON.parse(userId);
+    if (userId === null) {
+        userId = [];
+    }
     userId[userId.length] = response.data.id;
     userId = JSON.stringify(userId);
     localStorage.removeItem("ids");
