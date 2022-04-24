@@ -79,6 +79,7 @@ input {
     width: 300px;
     font-weight: bold;
     font-size: 19px;
+    overflow-wrap: break-word;
     line-height: 25px;
     color: #484848;
     margin-left: 21px;
@@ -150,7 +151,7 @@ input {
     display: flex;
     flex-wrap: wrap;
     text-align: center;
-    word-wrap: break-word;
+    overflow-wrap: break-word;
     justify-content: center;
     align-items: center;
     width: 100%;
@@ -183,6 +184,7 @@ input {
     font-size: 20px;
     line-height: 23px;
     font-weight: bold;
+    overflow-wrap: break-word;
     color: #000000;
     margin-top: 10px;
 }
