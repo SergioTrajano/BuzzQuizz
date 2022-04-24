@@ -13,10 +13,23 @@ const testCor = /^#([0-9a-f]{3}){1,2}$/i;
 
 function resetarCriacao() {
     document.querySelector(".finalizado").classList.add("escondido");
-    document.querySelector(".informacoes-basicas").remove("escondido");
+    document.querySelector(".informacoes-basicas").classList.remove("escondido");
     const inputs = document.querySelectorAll(".informacoes-basicas input");
     for (let i = 0; i < inputs.length; i++) {
         inputs[i].value = "";
+        inputs[i].style.background = "#FFFFFF";
+        if (i === 0) {
+            inputs[i].placeholder = "Título do seu quizz";
+        }
+        if (i === 1) {
+            inputs[i].placeholder = "URL da imagem do seu quizz";
+        }
+        if (i === 2) {
+            inputs[i].placeholder = "Quantidade de perguntas do quizz";
+        }
+        if (i === 3) {
+            inputs[3].placeholder = "Quantidade de níveis do quizz";
+        } 
     }
 }
 
@@ -118,7 +131,7 @@ function renderizarFimQuizz(niveis, id) {
                     <spam>${niveisOrdenados[k].minValue}</spam>% de acerto:&nbsp<span>${niveisOrdenados[k].title}</span>
                 </div>
                 <div>
-                    <img src="${niveisOrdenados[k].image}" alt="" style="width: 364px; height: 273px; object-fit: cover">
+                    <img src="${niveisOrdenados[k].image}" alt="" style="object-fit: cover">
                     <p>${niveisOrdenados[k].text}</p>
                 </div>
             </div>
@@ -147,14 +160,14 @@ function renderizarQuizz(response) {
     const exibir = document.querySelector(".exibir-quizz");
     exibir.innerHTML = `
         <div class="banner">
-            <img src="${response.data.image}" alt="" style="width: 100%; height: 227px; object-fit: cover;">
+            <img src="${response.data.image}" alt="" style="width: 100%; object-fit: cover;">
             <div class="fundo">
                 <p>${response.data.title}</p>
             </div>
         </div>
         <div></div>
     `;
-    const pergunta = document.querySelector(".exibir-quizz > div:last-child");
+    const pergunta = document.querySelector(".exibir-quizz > div:nth-child(2)");
     for (let i = 0; i < response.data.questions.length; i++) {
         respostas = response.data.questions[i].answers;
         shuffle(respostas);
@@ -171,7 +184,7 @@ function renderizarQuizz(response) {
         for (let j = 0; j < respostas.length; j++) {
             pergunta.querySelector(`.question:nth-child(${i+1}) div:last-child`).innerHTML += `
                 <div class="opcao ${respostas[j].isCorrectAnswer}">
-                    <img onclick="verificarResposta(this)" src="${respostas[j].image}" alt="" style="width: 330px; height: 175px; object-fit: cover;">
+                    <img onclick="verificarResposta(this)" src="${respostas[j].image}" alt="" style=" object-fit: cover;">
                     <p onclick="verificarResposta(this)">${respostas[j].text}</p>
                     <div class="escondido"></div>
                 </div>
@@ -185,12 +198,7 @@ function renderizarQuizz(response) {
 function resetaElemento(tela) {
     document.querySelector(`.${tela}`).classList.add("escondido");
     if (tela === "criacao-de-quizz") {
-        document.querySelector(".finalizado").classList.add("escondido");
-        document.querySelector(".informacoes-basicas").classList.remove("escondido");
-        const apagarInput = document.querySelectorAll(".informacoes-basicas input");
-        for (let i = 0; i < apagarInput.length; i++) {
-            apagarInput[i].value = "";
-        }
+        resetarCriacao();
     }
 }
 
@@ -476,6 +484,7 @@ function verificarPerguntas() {
     if (validarPerguntas()) {
         document.querySelector(".perguntas").classList.add("escondido");
         document.querySelector(".niveis").classList.remove("escondido");
+        document.querySelector(".niveis").scrollIntoView();
         preencherNiveis();
     }
 }
@@ -587,6 +596,7 @@ function verificarInfoBasicas() {
     if (informacoesValidas(titulo, url, numPerguntas, numNiveis)) {
         document.querySelector(".informacoes-basicas").classList.add("escondido");
         document.querySelector(".perguntas").classList.remove("escondido");
+        document.querySelector(".perguntas").scrollIntoView();
         preencherPerguntas();
     }
 }
