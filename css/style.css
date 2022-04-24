@@ -165,7 +165,7 @@ input {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    width: 688px;
+    width: 100%;
 }
 
 .opcao {
@@ -538,9 +538,13 @@ input {
         line-height: 21px;
     }
 
+    .exibir-quizz > div:nth-child(2) {
+        width: 100%;
+        max-width: 450px;
+    }
+
     .question {
         margin-top: 26px;
-        max-width: 450px;
         width: 100%;
         padding: 18px 18px 18px 23px;
     }
@@ -551,6 +555,7 @@ input {
 
     .question > div:last-child {
         width: 100%;
+        max-width: 480px;
     }
 
     .opcao img {
@@ -567,12 +572,14 @@ input {
 
     .resultado {
         width: 100%;
+        max-width: 450px;
         padding: 16px;
         margin-top: 24px;
     }
 
     .fim-Quizz > div:first-child {
         width: 100%;
+        max-width: 450px;
         height: 99px;
         font-size: 19px;
         line-height: 22px;
@@ -580,23 +587,27 @@ input {
 
     .fim-Quizz > div:last-child {
         width: 100%;
+        max-width: 450px;
         flex-direction: column;
     }
 
     .fim-Quizz img {
         width: 100%;
+        max-width: 450px;
     }
 
     .fim-Quizz > div:last-child p {
         margin-left: 0;
         font-size: 17px;
         line-height: 20px;
+        width: 100%;
+        max-width: 450px;
     }
 
     .prosseguir {
         margin-top: 30px;
         width: 100%;
-        max-width: 324px;
+        max-width: 250px;
         font-size: 18px;
         line-height: 21px;
         margin-bottom: 0;
@@ -605,27 +616,27 @@ input {
 
     input {
         width: 100%;
-        max-width: 564px;
+        max-width: 450px;
     }
 
     .dados-basicos {
         width: 100%;
-        max-width: 600px;
+        max-width: 500px;
     }
 
     .perguntas li {
         width: 100%;
-        max-width: 600px;
+        max-width: 400px;
     }
 
     .niveis li {
         width: 100%;
-        max-width: 600px;
+        max-width: 400px;
     }
 
     .finalizado img {
         width: 100%;
-        max-width: 500px;
+        max-width: 400px;
         height: 100%;
         min-height: 181px;
         max-height: 266px;
