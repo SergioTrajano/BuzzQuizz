@@ -11,6 +11,8 @@ const TAMANHO_MIN_PERGUNTA = 20;
 const regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
 const reg = /^#([0-9a-f]{3}){1,2}$/i;
 
+let quizzInfo;
+
 function retornarHome(tela) {
     if (tela === "criacao-de-quizz") {
         getQuizzes();
@@ -520,7 +522,7 @@ function prosseguir(fase) {
 
 function getQuizzes() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes");
-    promise.then(loadQuizzes)
+    promise.then(loadQuizzes);
 }
 
 function loadQuizzes(quizzes) {
@@ -529,7 +531,8 @@ function loadQuizzes(quizzes) {
     quizzList.innerHTML = "";
 
     for (let i = 0; i < quizzInfo.length; i++) {
-        quizzList.innerHTML += `<div class="quizz-retangulo" style="background-image: url('${quizzInfo[i].image}');"><div class="quizz-titulo">${quizzInfo[i].title}</div></div>`;
+        let quizId = quizzInfo.length - i;
+        quizzList.innerHTML += `<div class="quizz-retangulo" id=${i} style="background-image: url('${quizzInfo[i].image}');"><div class="quizz-titulo">${quizzInfo[i].title}</div></div>`;
     } 
 }
 
@@ -547,11 +550,4 @@ function checkUserQuizz(){
 function transicaoParaCriacao() {
     document.querySelector(".conteudo").classList.add("escondido");
     document.querySelector(".criacao-de-quizz").classList.remove("escondido");
-}
-
-function idUserQuizz() {
-    let userId = localStorage.getItem("ids");
-    userId = JSON.parse(userId);
-    console.log("Testando");
-    console.log(userId);
 }
