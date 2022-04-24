@@ -670,13 +670,13 @@ function atualizarQuizzUsuario(response) {
 }
 
 function verificarId(id) {
-    let userId = localStorage.getItem("ids");
-    userId = JSON.parse(userId);
-    if (userId === null) {
-        userId = [];
+    let userIds = localStorage.getItem("ids");
+    userIds = JSON.parse(userIds);
+    if (userIds === null) {
+        userIds = [];
     }
-    for (let i = 0; i < userId.length; i++) {
-        if (id === userId[i]) {
+    for (let i = 0; i < userIds.length; i++) {
+        if (id === userIds[i]) {
             return false;
         }
     }
