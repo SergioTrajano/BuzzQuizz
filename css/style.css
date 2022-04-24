@@ -577,6 +577,10 @@ input {
         margin-top: 24px;
     }
 
+    .fim-Quizz {
+        width: 100%;
+    }
+
     .fim-Quizz > div:first-child {
         width: 100%;
         max-width: 450px;
@@ -602,6 +606,7 @@ input {
         line-height: 20px;
         width: 100%;
         max-width: 450px;
+        margin-top: 10px;
     }
 
     .prosseguir {
