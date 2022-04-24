@@ -1,4 +1,4 @@
-const TEMPO_2s = 2 * 1000;
+const TEMPO_1S = 1 * 1000;
 const QUANT_MINIMA_PERGUNTAS = 3;
 const QUANT_MINIMA_NIVEIS = 2;
 const TAM_MIN_TITULO_QUIZZ = 20;
@@ -10,6 +10,8 @@ const TAM_MIN_DESCRICAO = 30;
 const TAMANHO_MIN_PERGUNTA = 20;
 const testURL = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
 const testCor = /^#([0-9a-f]{3}){1,2}$/i;
+
+getQuizzes();
 
 function resetarCriacao() {
     document.querySelector(".finalizado").classList.add("escondido");
@@ -33,16 +35,25 @@ function resetarCriacao() {
     }
 }
 
-let quizzInfo;
+function atualizarQuizz(response) {
+    loadQuizzes(response);
+    document.querySelector(".criacao-de-quizz").classList.add("escondido");
+    document.querySelector(".conteudo").classList.remove("escondido");
+}
+
+function atualizarTela1() {
+    const promisse = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes");
+    promisse.then(atualizarQuizz);
+}
 
 function retornarHome(tela) {
     if (tela === "criacao-de-quizz") {
-        getQuizzes();
-        checkUserQuizz();
-        resetarCriacao();
+        atualizarTela1();
     }
-    document.querySelector(`.${tela}`).classList.add("escondido");
-    document.querySelector(".conteudo").classList.remove("escondido");
+    if (tela === "exibir-quizz") {
+        document.querySelector(".exibir-quizz").classList.add("escondido");
+        document.querySelector(".conteudo").classList.remove("escondido");
+    }
 }
 
 function scrollarProx(elemento) {
@@ -68,7 +79,7 @@ function ativarFinal(listaQuestoes) {
         for (let i = niveis.length-1; i >= 0; i--) {
             if (Math.ceil(percent) >= Number(niveis[i].querySelector("spam").innerHTML)) {
                 niveis[i].querySelector("spam").innerHTML = percent.toFixed(0);
-                setTimeout(mostrarResultado, TEMPO_2s, niveis[i], resultado);
+                setTimeout(mostrarResultado, TEMPO_1S, niveis[i], resultado);
                 break;
             }
         }
@@ -96,7 +107,7 @@ function verificarResposta(opcao) {
     }
     for (let j = 0; j < listaQuestoes.length; j++) {
         if (!listaQuestoes[j].classList.contains("respondido")) {
-            setTimeout(scrollarProx, TEMPO_2s, listaQuestoes[j]);
+            setTimeout(scrollarProx, TEMPO_1S, listaQuestoes[j]);
             break;
         }
     }
@@ -197,29 +208,22 @@ function renderizarQuizz(response) {
     renderizarFimQuizz(response.data.levels, response.data.id);
 }
 
-function resetaElemento(tela) {
+function jogarQuizz(id, tela) {
     document.querySelector(`.${tela}`).classList.add("escondido");
     if (tela === "criacao-de-quizz") {
-        resetarCriacao();
+        getQuizzes();
     }
-}
-
-//O argumento "tela" dessa função significa o nome da "tela" em que estava o item que foi clickado, ou seja, os possíveis valores desse argumentão são: 'exibir-quizz', 'conteudo' ou 'criacao-de-quizz'; (para ver um exemplo da aplicação, olhar a função "renderizarFimQuizz")
-function jogarQuizz(id, tela) {
-    resetaElemento(tela);
     const promisse = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${id}`);
     promisse.then(renderizarQuizz);
     promisse.catch(tratarErro);
 }
-
-getQuizzes();
-checkUserQuizz();
 
 function tratarErro() {
     alert("Houve algum erro no processo!");
 }
 
 function concluirCriacao(response) {
+    getQuizzes();
     let userId = localStorage.getItem("ids");
     userId = JSON.parse(userId);
     userId[userId.length] = response.data.id;
@@ -229,7 +233,7 @@ function concluirCriacao(response) {
     document.querySelector(".finalizado").innerHTML = `
         <p>Seu quizz está pronto!</p>
         <div onclick="jogarQuizz(${response.data.id}, 'criacao-de-quizz')">
-            <img src="${response.data.image}" alt="" style="width: 500px; height: 265px">
+            <img src="${response.data.image}" alt="">
             <p>${response.data.title}</p>
             <div class="gradiente"></div>
         </div>
@@ -315,12 +319,16 @@ function validarNiveis() {
             tituloNivel.placeholder = `O título do nível deve ter no mínimo ${TAM_MIN_TITULO_NIVEL} caracteres!`;
             tituloNivel.style.background = "#FFE9E9";
             resposta = false;
+        } else {
+            tituloNivel.style.background = "#FFFFFF";
         }
         if (parseInt(porcent.value) < PORCENTAGEM_MINIMA_NIVEL || parseInt(porcent.value) > PORCENTAGEM_MAXIMA_NIVEL || isNaN(parseInt(porcent.value))) {
             porcent.value = "";
             porcent.style.background = "#FFE9E9";
             porcent.placeholder = "A porcentagem deve ser entre 0 e 100!";
             resposta = false;
+        } else {
+            porcent.style.background = "#FFFFFF";
         }
         if (parseInt(porcent.value) === PORCENTAGEM_MINIMA_NIVEL) {
             porcetZero = true;
@@ -335,17 +343,24 @@ function validarNiveis() {
                 url.placeholder = "Informe uma Url válida!";
             }
             resposta = false;
+        } else {
+            url.style.background = "#FFFFFF";
         }
         if (descricao.value.length < TAM_MIN_DESCRICAO) {
             descricao.value = "";
             descricao.style.background = "#FFE9E9";
             descricao.placeholder = `A descrição deve ter no minímo ${TAM_MIN_DESCRICAO} caracteres!`;
             resposta = false;
+        } else {
+            descricao.style.background = "#FFFFFF";
         }
     }
     if (!porcetZero) {
         resposta = false;
         alert("Deve haver pelo menos um nível com porcentagem igual a 0");
+    }
+    if (resposta === false) {
+        alert("Há algum dado inválido!");
     }
     return resposta;
 }
@@ -373,7 +388,7 @@ function preencherNiveis() {
             listaNiveis.innerHTML += `
                 <li class="selecionado">
                     <p>Nivel 1</p>
-                    <img class="icone escondido" onclick="maximizarPergunta(this, 'niveis')" src="Vector.png" alt="" style="width: 26px; height: 23px;">
+                    <img class="icone escondido" onclick="maximizarItem(this, 'niveis')" src="Vector.png" alt="" style="width: 26px; height: 23px;">
                     <div class="maximizado">
                         <input type="text" placeholder="Título do nível">
                         <input type="number" placeholder="% de acerto mínima">
@@ -386,7 +401,7 @@ function preencherNiveis() {
             listaNiveis.innerHTML += `
                 <li>
                     <p>Nivel ${i+1}</p>
-                    <img class="icone" onclick="maximizarPergunta(this, 'niveis')" src="Vector.png" alt="" style="width: 26px; height: 23px;">
+                    <img class="icone" onclick="maximizarItem(this, 'niveis')" src="Vector.png" alt="" style="width: 26px; height: 23px;">
                     <div class="maximizado escondido">
                         <input type="text" placeholder="Título do nível">
                         <input type="text" placeholder="% de acerto mínima">
@@ -419,18 +434,24 @@ function validarPerguntas() {
             textoPergunta.style.background = "#FFE9E9";
             textoPergunta.placeholder = `O titulo deve ter no minimo ${TAMANHO_MIN_PERGUNTA} caracteres!`;
             retorno = false;
+        } else {
+            textoPergunta.style.background = "#FFFFFF";
         }
         if (!testCor.test(corFundo.value.toUpperCase())) {
             corFundo.value = "";
             corFundo.style.background = "#FFE9E9";
             corFundo.placeholder = "A cor deve ser uma cor hexadecimal!";
             retorno = false;
+        } else {
+            corFundo.style.background = "#FFFFFF";
         }
         if (textoResposta.value === "") {
             textoResposta.value = "";
             textoResposta.style.background = "#FFE9E9";
             textoResposta.placeholder = "O quizz deve ter uma resposta correta...";
             retorno = false;
+        } else {
+            textoResposta.style.background = "#FFFFFF";
         }
         if (!testURL.test(urlResposta.value)) {
             urlResposta.value = "";
@@ -442,31 +463,37 @@ function validarPerguntas() {
                 testURL.placeholder = "Informe uma Url válida!";
             }
             retorno = false;
+        } else {
+            urlResposta.style.background = "#FFFFFF";
         }
         for (let j = 7; j < 12; j+=2) {
             textoErro = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(${j})`);
             urlErro = document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(${j+1})`);
-            if (textoErro.value !== "" && !testURL.test(urlErro.value)) {
-                testURL.value = "";
-                testURL.style.background = "#FFE9E9";
-                if (testURL.value !== "") {
-                    testURL.placeholder = "Url inválida!";
-                }
-                if (testURL.value === "") {
-                    testURL.placeholder = "Informe uma Url válida!";
-                }
-                retorno = false;
-            }
             if (!testURL.test(urlErro.value) && urlErro.value.length > 0) {
-                testURL.value = "";
-                testURL.style.background = "#FFE9E9";
-                if (testURL.value !== "") {
-                    testURL.placeholder = "Url inválida!";
+                urlErro.value = "";
+                urlErro.style.background = "#FFE9E9";
+                if (urlErro.value !== "") {
+                    urlErro.placeholder = "Url inválida!";
                 }
-                if (testURL.value === "") {
-                    testURL.placeholder = "Informe uma Url válida!";
+                if (urlErro.value === "") {
+                    urlErro.placeholder = "Informe uma Url válida!";
                 }
                 retorno = false;
+            } else {
+                urlErro.style.background = "#FFFFFF";
+            }
+            if (textoErro.value !== "" && !testURL.test(urlErro.value)) {
+                urlErro.value = "";
+                urlErro.style.background = "#FFE9E9";
+                if (urlErro.value !== "") {
+                    urlErro.placeholder = "Url inválida!";
+                }
+                if (urlErro.value === "") {
+                    urlErro.placeholder = "Informe uma Url válida!";
+                }
+                retorno = false;
+            } else {
+                urlErro.style.background = "#FFFFFF";
             }
         }
         if (document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(7)`).value === "" && document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(9)`).value === "" && document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(11)`).value === "") {
@@ -474,10 +501,15 @@ function validarPerguntas() {
             document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(8)`).style.background = "#FFE9E9";
             quantRespostaErrado = 0;
             retorno = false;
+        } else {
+            document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(7)`).style.background = "#FFFFFF";
         }
-    }
+    } 
     if (quantRespostaErrado === 0) {
         alert("Deve haver pelo menos uma resposta errada para cada pergunta!");
+    }
+    if (retorno === false) {
+        alert("Há algum dado inválido!");
     }
     return retorno;
 }
@@ -491,7 +523,7 @@ function verificarPerguntas() {
     }
 }
 
-function maximizarPergunta(elemento, fase) {
+function maximizarItem(elemento, fase) {
     const maximizar = elemento.parentNode.querySelector(".maximizado");
     const minimizar = document.querySelector(`.${fase} .selecionado`);
     if (minimizar !== null) {
@@ -514,7 +546,7 @@ function preencherPerguntas() {
             formularioPerguntas.innerHTML += `
             <li class="selecionado">
                 <p>Pergunta 1</p>
-                <img class="icone escondido" onclick="maximizarPergunta(this, 'perguntas')" src="Vector.png" alt="" style="width: 26px; height: 23px;">
+                <img class="icone escondido" onclick="maximizarItem(this, 'perguntas')" src="Vector.png" alt="" style="width: 26px; height: 23px;">
                 <div class="maximizado">
                     <input type="text" placeholder="Texto da pergunta">
                     <input type="text" placeholder="Cor de fundo da pergunta">
@@ -535,7 +567,7 @@ function preencherPerguntas() {
             formularioPerguntas.innerHTML += `
                 <li>
                     <p>Pergunta ${i+1}</p>
-                    <img class="icone" onclick="maximizarPergunta(this, 'perguntas')" src="Vector.png" alt="" style="width: 26px; height: 23px;">
+                    <img class="icone" onclick="maximizarItem(this, 'perguntas')" src="Vector.png" alt="" style="width: 26px; height: 23px;">
                     <div class="maximizado escondido">
                         <input type="text" placeholder="Texto da pergunta">
                         <input type="text" placeholder="Cor de fundo da pergunta">
@@ -563,18 +595,24 @@ function informacoesValidas(titulo, url, numPerguntas, numNiveis) {
         titulo.style.background = "#FFE9E9";
         titulo.placeholder = `O título do quizz deve ter entre ${TAM_MIN_TITULO_QUIZZ} e ${TAM_MAX_TITULO_QUIZZ} caracteres!`;
         resposta = false;
+    } else {
+        titulo.style.background = "#FFFFFF";
     }
     if (parseInt(numPerguntas.value) < QUANT_MINIMA_PERGUNTAS || isNaN(parseInt(numPerguntas.value))) {
         numPerguntas.value = "";
         numPerguntas.style.background = "#FFE9E9";
         numPerguntas.placeholder = `Deve haver no minímo ${QUANT_MINIMA_PERGUNTAS} perguntas!`;
         resposta = false;
+    } else {
+        numPerguntas.style.background = "#FFFFFF";
     }
     if (parseInt(numNiveis.value) < QUANT_MINIMA_NIVEIS || isNaN(parseInt(numNiveis.value))) {
         numNiveis.value = "";
         numNiveis.style.background = "#FFE9E9";
         numNiveis.placeholder = `Deve haver no minímo ${QUANT_MINIMA_NIVEIS} níveis!`;
         resposta = false;
+    } else {
+        numNiveis.style.background = "#FFFFFF";
     }
     if (!testURL.test(url.value)) {
         url.value = "";
@@ -586,6 +624,8 @@ function informacoesValidas(titulo, url, numPerguntas, numNiveis) {
             url.placeholder = "Informe uma Url válida!";
         }
         resposta = false;
+    } else {
+        url.style.background = "#FFFFFF";
     }
     return resposta;
 }
@@ -620,29 +660,60 @@ function getQuizzes() {
     promise.then(loadQuizzes);
 }
 
-function loadQuizzes(quizzes) {
-    quizzInfo = quizzes.data;
-    const quizzList = document.querySelector(".caixa-quizzes");
-    quizzList.innerHTML = "";
-
-    for (let i = 0; i < quizzInfo.length; i++) {
-        let quizId = quizzInfo.length - i;
-        quizzList.innerHTML += `<div class="quizz-retangulo" id=${i} style="background-image: url('${quizzInfo[i].image}');"><div class="quizz-titulo">${quizzInfo[i].title}</div></div>`;
-    } 
+function atualizarQuizzUsuario(response) {
+    const quizzUsuario = document.querySelector(".caixa-usuario");
+    quizzUsuario.innerHTML += `
+        <div class="quizz-retangulo" onclick="jogarQuizz(${response.data.id}, 'conteudo')" style="background-image: url('${response.data.image}');">
+            <div class="quizz-titulo">${response.data.title}</div>
+        </div>
+    `;
 }
 
-function checkUserQuizz(){
-    const userQuizzes = document.querySelector(".caixa-usuario").innerHTML;
-
-    if (userQuizzes == "") {
-        document.querySelector(".lista-de-quizz").classList.add("escondido");
-        
-    } else {
-        document.querySelector(".criar-quizz").classList.add("escondido");
+function verificarId(id) {
+    let userId = localStorage.getItem("ids");
+    userId = JSON.parse(userId);
+    for (let i = 0; i < userId.length; i++) {
+        if (id === userId[i]) {
+            return false;
+        }
     }
+    return true;
+}
+
+function loadQuizzes(quizzes) {
+    const quizzInfo = quizzes.data;
+    let userIds = localStorage.getItem("ids");
+    userIds = JSON.parse(userIds);
+    const quizzList = document.querySelector(".caixa-quizzes");
+    const quizzUsuario = document.querySelector(".caixa-usuario");
+    let promisse;
+    quizzList.innerHTML = "";
+    quizzUsuario.innerHTML = "";
+    for (let i = 0; i < quizzInfo.length; i++) {
+        if (verificarId(quizzInfo[i].id)) {
+            quizzList.innerHTML += `
+            <div class="quizz-retangulo" onclick="jogarQuizz(${quizzInfo[i].id}, 'conteudo')" style="background-image: url('${quizzInfo[i].image}');">
+                <div class="quizz-titulo">${quizzInfo[i].title}</div>
+            </div>
+        `;
+        }
+    }
+    for (let j = userIds.length-1; j >=0; j--) {
+        promisse = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${userIds[j]}`);
+        promisse.then(atualizarQuizzUsuario);
+        promisse.catch(tratarErro);
+    }
+    if (userIds.length > 0) {
+        document.querySelector(".criar-quizz").classList.add("escondido");
+        quizzUsuario.parentNode.classList.remove("escondido");
+    } else {
+        document.querySelector(".criar-quizz").classList.remove("escondido");
+        quizzUsuario.parentNode.classList.add("escondido");
+    } 
 }
 
 function transicaoParaCriacao() {
     document.querySelector(".conteudo").classList.add("escondido");
     document.querySelector(".criacao-de-quizz").classList.remove("escondido");
+    resetarCriacao();
 }
