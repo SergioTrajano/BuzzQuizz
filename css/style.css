@@ -559,6 +559,8 @@ input {
     }
 
     .opcao p {
+        width: 100%;
+        max-width: 330px;
         font-size: 13px;
         line-height: 15px;
     }
@@ -603,7 +605,7 @@ input {
 
     input {
         width: 100%;
-        max-width: 600px;
+        max-width: 564px;
     }
 
     .dados-basicos {
