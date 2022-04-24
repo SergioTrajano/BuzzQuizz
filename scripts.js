@@ -33,6 +33,8 @@ function resetarCriacao() {
     }
 }
 
+let quizzInfo;
+
 function retornarHome(tela) {
     if (tela === "criacao-de-quizz") {
         getQuizzes();
@@ -615,7 +617,7 @@ function prosseguir(fase) {
 
 function getQuizzes() {
     const promise = axios.get("https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes");
-    promise.then(loadQuizzes)
+    promise.then(loadQuizzes);
 }
 
 function loadQuizzes(quizzes) {
@@ -624,8 +626,9 @@ function loadQuizzes(quizzes) {
     quizzList.innerHTML = "";
 
     for (let i = 0; i < quizzInfo.length; i++) {
-        quizzList.innerHTML += `<div class="quizz-retangulo" style="background-image: url('${quizzInfo[i].image}');"><div class="quizz-titulo">${quizzInfo[i].title}</div></div>`;
-    }
+        let quizId = quizzInfo.length - i;
+        quizzList.innerHTML += `<div class="quizz-retangulo" id=${i} style="background-image: url('${quizzInfo[i].image}');"><div class="quizz-titulo">${quizzInfo[i].title}</div></div>`;
+    } 
 }
 
 function checkUserQuizz(){
