@@ -672,6 +672,9 @@ function atualizarQuizzUsuario(response) {
 function verificarId(id) {
     let userId = localStorage.getItem("ids");
     userId = JSON.parse(userId);
+    if (userId === null) {
+        userId = [];
+    }
     for (let i = 0; i < userId.length; i++) {
         if (id === userId[i]) {
             return false;
@@ -684,6 +687,9 @@ function loadQuizzes(quizzes) {
     const quizzInfo = quizzes.data;
     let userIds = localStorage.getItem("ids");
     userIds = JSON.parse(userIds);
+    if (userIds === null) {
+        userIds = [];
+    }
     const quizzList = document.querySelector(".caixa-quizzes");
     const quizzUsuario = document.querySelector(".caixa-usuario");
     let promisse;
