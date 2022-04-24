@@ -374,7 +374,7 @@ function preencherNiveis() {
                     <img class="icone escondido" onclick="maximizarPergunta(this, 'niveis')" src="Vector.png" alt="" style="width: 26px; height: 23px;">
                     <div class="maximizado">
                         <input type="text" placeholder="Título do nível">
-                        <input type="text" placeholder="% de acerto mínima">
+                        <input type="number" placeholder="% de acerto mínima">
                         <input type="text" placeholder="URL da imagem do nível">
                         <input type="text" placeholder="Descrição do nível">
                     </div>
