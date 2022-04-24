@@ -232,7 +232,7 @@ function concluirCriacao(response) {
     localStorage.setItem("ids", userId);
     document.querySelector(".finalizado").innerHTML = `
         <p>Seu quizz está pronto!</p>
-        <div onclick="jogarQuizz(${response.data.id}, 'criacao-de-quizz')">
+        <div class="layout-quizz" onclick="jogarQuizz(${response.data.id}, 'criacao-de-quizz')">
             <img src="${response.data.image}" alt="">
             <p>${response.data.title}</p>
             <div class="gradiente"></div>
@@ -663,8 +663,10 @@ function getQuizzes() {
 function atualizarQuizzUsuario(response) {
     const quizzUsuario = document.querySelector(".caixa-usuario");
     quizzUsuario.innerHTML += `
-        <div class="quizz-retangulo" onclick="jogarQuizz(${response.data.id}, 'conteudo')" style="background-image: url('${response.data.image}');">
-            <div class="quizz-titulo">${response.data.title}</div>
+        <div class="layout-quizz" onclick="jogarQuizz(${response.data.id}, 'conteudo')">
+            <img src="${response.data.image}" alt="">
+            <p>${response.data.title}</p>
+            <div class="gradiente"></div>
         </div>
     `;
 }
@@ -698,10 +700,12 @@ function loadQuizzes(quizzes) {
     for (let i = 0; i < quizzInfo.length; i++) {
         if (verificarId(quizzInfo[i].id)) {
             quizzList.innerHTML += `
-            <div class="quizz-retangulo" onclick="jogarQuizz(${quizzInfo[i].id}, 'conteudo')" style="background-image: url('${quizzInfo[i].image}');">
-                <div class="quizz-titulo">${quizzInfo[i].title}</div>
-            </div>
-        `;
+                <div class="layout-quizz" onclick="jogarQuizz(${quizzInfo[i].id}, 'conteudo')">
+                    <img src="${quizzInfo[i].image}" alt="">
+                    <p>${quizzInfo[i].title}</p>
+                    <div class="gradiente"></div>
+                </div>
+            `;
         }
     }
     for (let j = userIds.length-1; j >=0; j--) {
