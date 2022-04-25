@@ -306,7 +306,7 @@ function retornarPerguntas() {
 
 function verificarRepeticao(index, porcent) {
     if (index > 1) {
-        for (let i = 1; i <= index; i++) {
+        for (let i = 1; i < index; i++) {
             if (document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(2)`).value === porcent.value && porcent.value !== "") {
                 document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(2)`).value = "";
                 document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(2)`).style.background = "#FFE9E9";
