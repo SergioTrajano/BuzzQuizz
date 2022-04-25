@@ -515,7 +515,6 @@ input {
     flex-direction: column;
     align-items: center;
     justify-content: space-evenly;
-    z-index: 1;
 }
 
 .edicao ion-icon {
