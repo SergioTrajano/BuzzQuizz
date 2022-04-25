@@ -209,6 +209,7 @@ function renderizarQuizz(response) {
 }
 
 function jogarQuizz(id, tela) {
+    stopBubbling(this.event);
     document.querySelector(`.${tela}`).classList.add("escondido");
     if (tela === "criacao-de-quizz") {
         getQuizzes();
@@ -670,8 +671,26 @@ function atualizarQuizzUsuario(response) {
             <img src="${response.data.image}" alt="">
             <p>${response.data.title}</p>
             <div class="gradiente"></div>
+            <div class="edicao">    
+                <ion-icon name="create-outline" onclick="testEdit()"></ion-icon>
+                <ion-icon name="trash-outline" onclick="testDelete()"></ion-icon>
+            </div>
         </div>
     `;
+}
+
+function testEdit() {
+    stopBubbling(this.event);
+    alert("Você quer editar seu quizz.");
+}
+
+function testDelete() {
+    stopBubbling(this.event);
+    alert("Você quer deletar seu quizz.");
+}
+
+function stopBubbling(evt){
+    evt.stopPropagation();
 }
 
 function verificarId(id) {
