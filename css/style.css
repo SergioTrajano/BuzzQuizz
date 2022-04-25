@@ -202,7 +202,7 @@ input {
 .conteudo {
     background-color: #fafafa;
     position: absolute;
-    top: 140px;
+    top: 69px;
     left: 0;
     bottom: 0;
     overflow-y: scroll;
@@ -217,6 +217,7 @@ input {
     width: 1051px;
     height: 181px;
     padding: 30px;
+    margin-top: 71px;
     margin-bottom: 70px;
     background: #fafafa;
     border: 1px dashed #d5d5d5;
@@ -259,8 +260,31 @@ input {
     width: 1050px;
 }
 
+.lista-de-quizz:nth-child(2) {
+    margin-top: 71px;
+}
+
 .lista-de-quizz:last-child {
     padding-bottom: 100px;
+}
+
+.carregando {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 69px;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.carregando p {
+    color: #290908;
+    font-size: 25px;
+    line-height: 29px;
 }
 
 .titulo-da-lista {
@@ -297,22 +321,12 @@ input {
     justify-content: space-between;
 }
 
-.quizz-retangulo {
-    width: 340px;
-    height: 181px;
-    margin-top: 12px;
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0) 0%,
-        rgba(0, 0, 0, 0.5) 70%,
-        #000000 100%
-        );
-    background-size: cover;
-    border-radius: 5px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    position: relative;
+.justify-none {
+    justify-content: flex-start;
+}
+
+.justify-none > div {
+    margin-right: 15px;
 }
 
 .quizz-titulo {
