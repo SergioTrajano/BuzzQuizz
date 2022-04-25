@@ -48,6 +48,7 @@ input {
     bottom: 0;
     left: 0;
     overflow-y: scroll;
+    scrollbar-width: none;
 }
 
 .fim-Quizz > div:first-child {
@@ -211,6 +212,7 @@ input {
     display: flex;
     flex-direction: column;
     align-items: center;
+    scrollbar-width: none;
 }
 
 .criar-quizz {
@@ -343,6 +345,7 @@ input {
 
 .criacao-de-quizz {
     margin: 69px auto 0 auto;
+    scrollbar-width: none;
 }
 
 .criacao-de-quizz p {
@@ -358,6 +361,7 @@ input {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    scrollbar-width: none;
 }
 
 .dados-basicos {
@@ -394,6 +398,7 @@ input {
     bottom: 0;
     overflow-y: scroll;
     margin-bottom: 30px;
+    scrollbar-width: none;
 }
 
 .perguntas > p {
@@ -441,6 +446,7 @@ input {
     position: absolute;
     top: 69px;
     left: 0;
+    scrollbar-width: none;
 }
 
 .niveis > p {
@@ -475,6 +481,7 @@ input {
     display: flex;
     flex-direction: column;
     align-items: center;
+    scrollbar-width: none;
 }
 
 .finalizado > div:last-child {
