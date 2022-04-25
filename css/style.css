@@ -491,6 +491,7 @@ input {
     left: 18px;
     right: 18px;
     z-index: 1;
+    overflow-wrap: break-word;
 }
 
 .gradiente {
@@ -587,7 +588,7 @@ input {
 
     .opcao p {
         width: 100%;
-        max-width: 330px;
+        max-width: 163px;
         font-size: 13px;
         line-height: 15px;
     }

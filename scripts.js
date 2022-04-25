@@ -305,6 +305,20 @@ function retornarPerguntas() {
     return questions;
 }
 
+function verificarRepeticao(index, porcent) {
+    if (index > 1) {
+        for (let i = 1; i < index; i++) {
+            if (document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(2)`).value === porcent.value && porcent.value !== "") {
+                document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(2)`).value = "";
+                document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(2)`).style.background = "#FFE9E9";
+                document.querySelector(`.niveis li:nth-child(${i}) input:nth-child(2)`).placeholder = "Não pode haver dois níveis com a mesma porcentagem!";
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 function validarNiveis() {
     const numNiveis = parseInt(document.querySelector(".informacoes-basicas input:last-child").value);
     let tituloNivel;
@@ -357,6 +371,12 @@ function validarNiveis() {
             resposta = false;
         } else {
             descricao.style.background = "#FFFFFF";
+        }
+        if(verificarRepeticao(i, porcent)) {
+            porcent.value = "";
+            porcent.style.background = "#FFE9E9";
+            porcent.placeholder = "Não pode haver dois níveis com a mesma porcentagem!";
+            resposta = false;
         }
     }
     if (!porcetZero) {
@@ -498,6 +518,12 @@ function validarPerguntas() {
                 retorno = false;
             } else {
                 urlErro.style.background = "#FFFFFF";
+            }
+            if (textoErro.value === "" && testURL.test(urlErro.value)) {
+                textoErro.style.background = "#FFE9E9";
+                textoErro.placeholder = "Coloque uma descrição para a resposta!";
+            } else {
+                textoErro.style.background = "#FFFFFF";
             }
         }
         if (document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(7)`).value === "" && document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(9)`).value === "" && document.querySelector(`.perguntas li:nth-child(${i}) .maximizado input:nth-child(11)`).value === "") {
