@@ -593,7 +593,8 @@ input {
     }
 
     .question > div:first-child {
-        height: 89px;
+        font-size: 19px;
+        line-height: 22px;
     }
 
     .question > div:last-child {
