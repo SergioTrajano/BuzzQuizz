@@ -420,6 +420,7 @@ function preencherNiveis() {
             `;
         }
     }
+    document.querySelector(".niveis > p").scrollIntoView(false);
 }
 
 function validarPerguntas() {
@@ -596,6 +597,7 @@ function preencherPerguntas() {
             `;
         }
     }
+    document.querySelector(".perguntas > p").scrollIntoView(false);
 }
 
 function informacoesValidas(titulo, url, numPerguntas, numNiveis) {
