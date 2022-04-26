@@ -197,9 +197,6 @@ function jogarQuizz(id, tela) {
     stopBubbling(this.event);
     document.querySelector(`.${tela}`).classList.add("escondido");
     document.querySelector(".carregando").classList.remove("escondido");
-    if (tela === "criacao-de-quizz") {
-        getQuizzes();
-    }
     const promisse = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${id}`);
     promisse.then(renderizarQuizz);
     promisse.catch(tratarErro);
