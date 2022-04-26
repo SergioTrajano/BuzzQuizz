@@ -79,7 +79,7 @@ function verificarResposta(opcao) {
     }
     const listaQuestoes = document.querySelectorAll(".question");
     for (let i = 0; i < question.length; i++) {
-        if (opcao.parentNode.innerHTML !== question[i].innerHTML) {
+        if (opcao.parentNode !== question[i]) {
             question[i].querySelector("div").classList.remove("escondido");
         }
         if (question[i].classList.contains("true")) {
