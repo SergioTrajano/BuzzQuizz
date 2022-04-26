@@ -700,12 +700,12 @@ function atualizarQuizzUsuario(response) {
 
 function testEdit() {
     stopBubbling(this.event);
-    alert("Você quer editar seu quizz.");
+    alert("Você quer editar seu quizz, mas não deu tempo de fazer (T_T)...");
 }
 
 function testDelete() {
     stopBubbling(this.event);
-    alert("Você quer deletar seu quizz.");
+    alert("Você quer deletar seu quizz, mas não deu tempo de fazer (T_T)...");
 }
 
 function stopBubbling(evt){
